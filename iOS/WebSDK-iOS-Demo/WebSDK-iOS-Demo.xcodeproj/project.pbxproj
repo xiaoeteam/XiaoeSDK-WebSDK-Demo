@@ -12,6 +12,13 @@
 		51C573022522D90B0045763F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 51C573012522D90B0045763F /* Assets.xcassets */; };
 		51C573052522D90B0045763F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 51C573032522D90B0045763F /* LaunchScreen.storyboard */; };
 		51C5730D2522DE430045763F /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C5730C2522DE430045763F /* WebViewController.swift */; };
+		51C57327252322820045763F /* UIView+AutoLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C5731F252322820045763F /* UIView+AutoLayout.swift */; };
+		51C57328252322820045763F /* DisplayLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C57320252322820045763F /* DisplayLink.swift */; };
+		51C57329252322820045763F /* VHUDWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C57321252322820045763F /* VHUDWindow.swift */; };
+		51C5732A252322820045763F /* VHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C57322252322820045763F /* VHUDView.swift */; };
+		51C5732B252322820045763F /* ProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C57323252322820045763F /* ProgressView.swift */; };
+		51C5732C252322820045763F /* VHUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C57325252322820045763F /* VHUD.swift */; };
+		51C5732D252322820045763F /* VHUDViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C57326252322820045763F /* VHUDViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +29,13 @@
 		51C573042522D90B0045763F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		51C573062522D90B0045763F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		51C5730C2522DE430045763F /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
+		51C5731F252322820045763F /* UIView+AutoLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+AutoLayout.swift"; sourceTree = "<group>"; };
+		51C57320252322820045763F /* DisplayLink.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayLink.swift; sourceTree = "<group>"; };
+		51C57321252322820045763F /* VHUDWindow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VHUDWindow.swift; sourceTree = "<group>"; };
+		51C57322252322820045763F /* VHUDView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VHUDView.swift; sourceTree = "<group>"; };
+		51C57323252322820045763F /* ProgressView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProgressView.swift; sourceTree = "<group>"; };
+		51C57325252322820045763F /* VHUD.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VHUD.swift; sourceTree = "<group>"; };
+		51C57326252322820045763F /* VHUDViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VHUDViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +68,7 @@
 		51C572F72522D9090045763F /* WebSDK-iOS-Demo */ = {
 			isa = PBXGroup;
 			children = (
+				51C57310252320990045763F /* ProgressHUD */,
 				51C5730C2522DE430045763F /* WebViewController.swift */,
 				51C572F82522D9090045763F /* AppDelegate.swift */,
 				51C572FC2522D9090045763F /* ViewController.swift */,
@@ -63,6 +78,20 @@
 			);
 			path = "WebSDK-iOS-Demo";
 			sourceTree = "<group>";
+		};
+		51C57310252320990045763F /* ProgressHUD */ = {
+			isa = PBXGroup;
+			children = (
+				51C57320252322820045763F /* DisplayLink.swift */,
+				51C57323252322820045763F /* ProgressView.swift */,
+				51C5731F252322820045763F /* UIView+AutoLayout.swift */,
+				51C57325252322820045763F /* VHUD.swift */,
+				51C57322252322820045763F /* VHUDView.swift */,
+				51C57326252322820045763F /* VHUDViewController.swift */,
+				51C57321252322820045763F /* VHUDWindow.swift */,
+			);
+			path = ProgressHUD;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -134,9 +163,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				51C57328252322820045763F /* DisplayLink.swift in Sources */,
 				51C572FD2522D9090045763F /* ViewController.swift in Sources */,
+				51C57327252322820045763F /* UIView+AutoLayout.swift in Sources */,
+				51C5732C252322820045763F /* VHUD.swift in Sources */,
+				51C5732A252322820045763F /* VHUDView.swift in Sources */,
 				51C5730D2522DE430045763F /* WebViewController.swift in Sources */,
+				51C5732B252322820045763F /* ProgressView.swift in Sources */,
+				51C57329252322820045763F /* VHUDWindow.swift in Sources */,
 				51C572F92522D9090045763F /* AppDelegate.swift in Sources */,
+				51C5732D252322820045763F /* VHUDViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
