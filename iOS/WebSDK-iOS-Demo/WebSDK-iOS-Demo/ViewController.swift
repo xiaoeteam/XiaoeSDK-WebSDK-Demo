@@ -28,7 +28,9 @@ class ViewController: UIViewController {
     
     @objc func goToWebView() -> Void {
         let webViewController = WebViewController()
-        webViewController.loadUrl = "https://appxrwbvfhb8064.h5.xiaoeknow.com/v1/course/alive/l_5f72e59be4b0e95a89c1be7f?type=2"
+        //在小鹅通B端管理台复制出来的课程链接
+        //webViewController.loadUrl = "https://appxrwbvfhb8064.h5.xiaoeknow.com/v1/course/alive/l_5f72e59be4b0e95a89c1be7f?type=2"
+        webViewController.loadUrl = "https://www.baidu.com/login"
         self.navigationController?.pushViewController(webViewController, animated: true)
     }
 

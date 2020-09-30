@@ -19,6 +19,7 @@ class WebViewController : UIViewController {
         return view
     }()
     
+    ///在小鹅通B端管理台复制出来的课程链接
     var loadUrl:String?
     
     override func viewDidLoad() {
@@ -54,10 +55,20 @@ class WebViewController : UIViewController {
     func goToLogin() -> Void {
         /**
             APP端发起和小鹅通提供的服务器端API对接，
-            APP -> 请求APP Server -> 请求小鹅通Server  -> 返回登录注册成功后的带登录态的url，
-            登录态获取成功：APP端的wkwebview重新发起对带登录态的url网页加载，
+            APP -> 请求APP Server -> 请求小鹅通Server  -> 返回登录注册成功后的带登录态的URL，
+            登录态获取成功：APP端的wkwebview重新发起对带登录态的URL网页加载，
             登录态获取失败：建议弹一个错误提示框告知用户，其他不需要额外处理，小鹅通课堂H5请求APP同步登录态信息的特定URL会内置提供手动刷新重新发起登录态获取请求
          */
+        
+        //1、请求获取到小鹅通提供的带登录态的URL链接
+        //Todo ...
+        
+        //2、登录态获取成功，wkwebview重新发起对带登录态的URL网页加载
+        let authorizedLoadUrl =  "https://www.baidu.com"
+        if let url = URL(string: authorizedLoadUrl) {
+            webView.load(URLRequest(url: url))
+        }
+        //or 3、登录态获取失败,弹错误提示框
         
         
     }
@@ -97,7 +108,7 @@ extension WebViewController : WKUIDelegate,WKNavigationDelegate {
             APP需要拦截判断小鹅通课堂H5内发起的请求APP同步登录态信息的特定URL,
             调起APP测的登录态处理流程，处理方式参考goToLogin方法样例
          */
-        if let urlstr = navigationAction.request.url?.absoluteString , urlstr == "http://www.baidu.com/login" {
+        if let urlstr = navigationAction.request.url?.absoluteString , urlstr.hasPrefix("https://www.baidu.com/login")  {
             //发起登录请求
             goToLogin()
         }
