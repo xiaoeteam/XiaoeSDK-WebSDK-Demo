@@ -29,12 +29,28 @@ class WebViewController : UIViewController {
         view.addSubview(webView)
         
         //加载网页
-        if let urlstr = loadUrl , let url = URL(string: urlstr) {
+        if let urlstr = loadUrl, let url = URL(string: generateAppendAppUserInfoUrl(url: urlstr)) {
             webView.load(URLRequest(url: url))
         }
         
     }
     
+    
+    //生成附加APP测登录态用户信息的初始化请求小鹅课堂H5网页的URL
+    func generateAppendAppUserInfoUrl(url:String) -> String {
+        //读取APP测已预先通过小鹅通提供的登录态API获取或者缓存的小鹅登录用户态信息
+        let userTokenKey = "xxxxxx"
+        let userTokenValue = "xxxxxx"
+        var resultUrl = url
+        if resultUrl.contains("?") == true {
+            resultUrl = "\(resultUrl)&tokenkey=\(userTokenKey)&tokenValue=\(userTokenValue)"
+        }else{
+            resultUrl = "\(resultUrl)?tokenkey=\(userTokenKey)&tokenValue=\(userTokenValue)"
+        }
+        return resultUrl
+    }
+    
+    //APP测登录态获取同步方法事例
     func goToLogin() -> Void {
         /**
             APP端发起和小鹅通提供的服务器端API对接，
@@ -76,7 +92,7 @@ extension WebViewController : WKUIDelegate,WKNavigationDelegate {
     }
     
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-        //APP需要拦截判断小鹅通课堂H5内发起的请求APP同步登录态信息的特定URL
+        
         /**
             APP需要拦截判断小鹅通课堂H5内发起的请求APP同步登录态信息的特定URL,
             调起APP测的登录态处理流程，处理方式参考goToLogin方法样例
@@ -87,5 +103,7 @@ extension WebViewController : WKUIDelegate,WKNavigationDelegate {
         }
         decisionHandler(WKNavigationActionPolicy.allow)
     }
+    
+    
     
 }
