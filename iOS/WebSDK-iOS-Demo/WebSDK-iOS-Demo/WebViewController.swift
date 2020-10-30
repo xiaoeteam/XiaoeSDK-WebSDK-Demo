@@ -30,26 +30,13 @@ class WebViewController : UIViewController {
         view.addSubview(webView)
         
         //加载网页
-        if let urlstr = loadUrl, let url = URL(string: generateAppendAppUserInfoUrl(url: urlstr)) {
+        if let urlstr = loadUrl, let url = URL(string: urlstr) {
             webView.load(URLRequest(url: url))
         }
         
     }
     
     
-    //生成附加APP测登录态用户信息的初始化请求小鹅课堂H5网页的URL
-    func generateAppendAppUserInfoUrl(url:String) -> String {
-        //读取APP测已预先通过小鹅通提供的登录态API获取或者缓存的小鹅登录用户态信息
-        let userTokenKey = "xxxxxx"
-        let userTokenValue = "xxxxxx"
-        var resultUrl = url
-        if resultUrl.contains("?") == true {
-            resultUrl = "\(resultUrl)&tokenkey=\(userTokenKey)&tokenValue=\(userTokenValue)"
-        }else{
-            resultUrl = "\(resultUrl)?tokenkey=\(userTokenKey)&tokenValue=\(userTokenValue)"
-        }
-        return resultUrl
-    }
     
     //APP测登录态获取同步方法事例
     func goToLogin() -> Void {
