@@ -12,8 +12,18 @@ import WebKit
 
 class WebViewController : UIViewController {
     
+    var isIphoneX: Bool {
+        get {
+            let kScreenHeight = UIScreen.main.bounds.size.height
+            return kScreenHeight >= 812 && kScreenHeight < 1024
+        }
+    }
+    
     lazy var webView : WKWebView = {
-        let view = WKWebView.init(frame: self.view.bounds)
+        var rect = self.view.bounds
+        rect.origin.y = isIphoneX ? 88 : 64
+        rect.size.height = rect.size.height - rect.origin.y
+        let view = WKWebView.init(frame: rect )
         view.uiDelegate = self;
         view.navigationDelegate = self;
         return view
@@ -21,6 +31,15 @@ class WebViewController : UIViewController {
     
     ///在小鹅通B端管理台复制出来的课程链接
     var loadUrl:String?
+    
+    var interceptAddress: String?
+    
+    var appId: String?
+    
+    var userId: String?
+    
+    /// 登录操作前的页面
+    var loginFrontUrl: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,30 +55,6 @@ class WebViewController : UIViewController {
         
     }
     
-    
-    
-    //APP测登录态获取同步方法事例
-    func goToLogin() -> Void {
-        /**
-            APP端发起和小鹅通提供的服务器端API对接，
-            APP -> 请求APP Server -> 请求小鹅通Server  -> 返回登录注册成功后的带登录态的URL，
-            登录态获取成功：APP端的wkwebview重新发起对带登录态的URL网页加载，
-            登录态获取失败：建议弹一个错误提示框告知用户，其他不需要额外处理，小鹅通课堂H5请求APP同步登录态信息的特定URL会内置提供手动刷新重新发起登录态获取请求
-         */
-        
-        //1、请求获取到小鹅通提供的带登录态的URL链接
-        //Todo ...
-        
-        //2、登录态获取成功，wkwebview重新发起对带登录态的URL网页加载
-        let authorizedLoadUrl =  "https://www.baidu.com"
-        if let url = URL(string: authorizedLoadUrl) {
-            webView.load(URLRequest(url: url))
-        }
-        //or 3、登录态获取失败,弹错误提示框
-        
-        
-    }
-    
     //自定义的加载视图（展示）
     func showLoading() -> Void {
         var content = VHUDContent(.loop(3.0))
@@ -68,9 +63,97 @@ class WebViewController : UIViewController {
         VHUD.show(content)
     }
     
+    func showError(_ msg: String){
+        hideLoading()
+        let alertController = UIAlertController(title: "系统提示",
+                                                message: msg, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "好的", style: .default, handler: {
+            action in
+            print("点击了确定")
+        })
+        alertController.addAction(okAction)
+        DispatchQueue.main.async {
+            self.present(alertController, animated: true, completion: nil)
+        }
+    }
+    
     //自定义的加载视图（隐藏）
     func hideLoading() -> Void {
-        VHUD.dismiss(1.0, 1.0)
+        VHUD.dismiss(0.25, 0.25)
+    }
+    
+}
+
+extension WebViewController {
+    
+    //APP测登录态获取同步方法事例
+    func goToLogin() -> Void {
+       
+
+        let urlString = "http://platform.h5.inside.xiaoe-tech.com/platform/login_cooperate/get_login_url"
+        let params: Any = ["app_id":appId ?? "" ,"user_id": userId ?? "","data":["login_type":"2","redirect_uri": loginFrontUrl]]
+        guard let body = try? JSONSerialization.data(withJSONObject: params, options: .prettyPrinted) else {
+            return
+        }
+        httpSend(urlString: urlString, body: String(data: body, encoding: .utf8)
+            ,completionHandler: {[weak self] (data, response, error) in
+                if error != nil {
+                    self?.showError("登录失败！")
+                    return
+                }
+                if let reslutData = data as NSData?,
+                    let reslut = self?.nsdataToJSON(data: reslutData) as? [String: Any]{
+                    guard let dic = reslut["data"] as? [String: String] else {
+                        return
+                    }
+                    /// 授权失败
+                    if let code = reslut["code"] as? Int, code != 0{
+                        if let urlstr = dic["permission_denied_url"] ,  let url = URL(string: urlstr) {
+                            self?.webView.load(URLRequest(url: url))
+                        }
+                    } else {
+                        /// 授权成功
+                        if  let urlstr = dic["login_url"] ,  let url = URL(string: urlstr) {
+                            self?.webView.load(URLRequest(url: url))
+                        }
+                    }
+                }
+                
+                
+        })
+ 
+    }
+    
+    
+    func nsdataToJSON(data: NSData) -> AnyObject? {
+        do {
+            return try JSONSerialization.jsonObject(with: data as Data, options: .mutableContainers) as AnyObject
+        } catch {
+            print(error)
+        }
+        return nil
+    }
+    
+    func httpSend(urlString:String, body:String?, completionHandler: @escaping(Data?, URLResponse?, Error?) -> Void){
+        /// 参数
+        let str = urlString.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) ?? ""
+        let url:URL! = URL.init(string: str)
+        var request:URLRequest = URLRequest(url: url)
+        
+        if body != nil{
+            request.httpMethod = "POST"
+            let bodyData = body?.data(using: String.Encoding.utf8)
+            request.httpBody = bodyData
+            request.setValue("application/json; charset=UTF-8", forHTTPHeaderField: "content-type")
+        }else{
+            request.httpMethod = "GET"
+        }
+        
+        // 请求
+        let config = URLSessionConfiguration.default
+        let session = URLSession(configuration: config)
+        let dataTask = session.dataTask(with: request, completionHandler: completionHandler)
+        dataTask.resume()
     }
 }
 
@@ -92,16 +175,17 @@ extension WebViewController : WKUIDelegate,WKNavigationDelegate {
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         
         /**
-            APP需要拦截判断小鹅通课堂H5内发起的请求APP同步登录态信息的特定URL,
-            调起APP测的登录态处理流程，处理方式参考goToLogin方法样例
+         APP需要拦截判断小鹅通课堂H5内发起的请求APP同步登录态信息的特定URL,
+         调起APP测的登录态处理流程，处理方式参考goToLogin方法样例
          */
-        if let urlstr = navigationAction.request.url?.absoluteString , urlstr.hasPrefix("https://www.baidu.com/login")  {
+        if let urlstr = navigationAction.request.url?.absoluteString , urlstr.hasPrefix(interceptAddress ?? "")  {
             //发起登录请求
             goToLogin()
+        } else {
+            loginFrontUrl = navigationAction.request.url?.absoluteString
         }
         decisionHandler(WKNavigationActionPolicy.allow)
     }
-    
     
     
 }
