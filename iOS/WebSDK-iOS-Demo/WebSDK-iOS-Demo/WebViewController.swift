@@ -109,12 +109,16 @@ extension WebViewController {
                     /// 授权失败
                     if let code = reslut["code"] as? Int, code != 0{
                         if let urlstr = dic["permission_denied_url"] ,  let url = URL(string: urlstr) {
+                            DispatchQueue.main.async {
                             self?.webView.load(URLRequest(url: url))
+                            }
                         }
                     } else {
                         /// 授权成功
                         if  let urlstr = dic["login_url"] ,  let url = URL(string: urlstr) {
-                            self?.webView.load(URLRequest(url: url))
+                            DispatchQueue.main.async {
+                                self?.webView.load(URLRequest(url: url))
+                            }
                         }
                     }
                 }
