@@ -38,6 +38,12 @@ class WebViewController : UIViewController {
     
     var userId: String?
     
+    var loginUrl: String?
+    
+    var client_id: String?
+    
+    var client_secret: String?
+    
     /// 登录操作前的页面
     var loginFrontUrl: String?
     
@@ -57,6 +63,7 @@ class WebViewController : UIViewController {
     
     //自定义的加载视图（展示）
     func showLoading() -> Void {
+        VHUD.dismiss(0.0,0.0)
         var content = VHUDContent(.loop(3.0))
         content.shape = .circle
         content.style = .light
@@ -89,9 +96,8 @@ extension WebViewController {
     //APP测登录态获取同步方法事例
     func goToLogin() -> Void {
        
-
-        let urlString = "http://platform.h5.inside.xiaoe-tech.com/platform/login_cooperate/get_login_url"
-        let params: Any = ["app_id":appId ?? "" ,"user_id": userId ?? "","data":["login_type":"2","redirect_uri": loginFrontUrl]]
+        let urlString = loginUrl ?? ""
+        let params: Any = ["app_id":self.appId ?? "" ,"client_id":self.client_id ?? "","client_secret":self.client_secret ?? "","user_id": self.userId ?? "","grant_type":"client_credential","banner_url":loginFrontUrl]
         guard let body = try? JSONSerialization.data(withJSONObject: params, options: .prettyPrinted) else {
             return
         }
@@ -176,15 +182,25 @@ extension WebViewController : WKUIDelegate,WKNavigationDelegate {
         hideLoading()
     }
     
+    func webView(_ webView: WKWebView, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust {
+            let  card = URLCredential(trust: challenge.protectionSpace.serverTrust!)
+            completionHandler(URLSession.AuthChallengeDisposition.useCredential,card);
+        }
+    }
+    
+ 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         
         /**
          APP需要拦截判断小鹅通课堂H5内发起的请求APP同步登录态信息的特定URL,
          调起APP测的登录态处理流程，处理方式参考goToLogin方法样例
          */
-        if let urlstr = navigationAction.request.url?.absoluteString , urlstr.hasPrefix(interceptAddress ?? "")  {
+        if let urlstr = navigationAction.request.url?.absoluteString , urlstr.contains(interceptAddress ?? "")  {
             //发起登录请求
             goToLogin()
+            decisionHandler(WKNavigationActionPolicy.cancel)
+            return
         } else {
             loginFrontUrl = navigationAction.request.url?.absoluteString
         }

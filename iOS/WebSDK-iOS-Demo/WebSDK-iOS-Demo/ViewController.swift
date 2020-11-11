@@ -9,71 +9,141 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    var loadUrl: XETextField = {
+        let text = XETextField(frame: CGRect(x: 10, y: 180, width: UIScreen.main.bounds.width, height: 20))
+        return text
+    }()
+    
+    var interceptAddress: XETextField = {
+        let text = XETextField(frame: CGRect(x: 10, y: 210, width: UIScreen.main.bounds.width, height: 20))
+        return text
+    }()
+    
+    var appId: XETextField = {
+        let text = XETextField(frame: CGRect(x: 10, y: 240, width: UIScreen.main.bounds.width, height: 20))
+        return text
+    }()
+    
+    var userId: XETextField = {
+        let text = XETextField(frame: CGRect(x: 10, y: 270, width: UIScreen.main.bounds.width, height: 20))
+        return text
+    }()
 
+    
+    var client_id: XETextField = {
+        let text = XETextField(frame: CGRect(x: 10, y: 300, width: UIScreen.main.bounds.width, height: 20))
+        return text
+    }()
+    
+    var client_secret: XETextField = {
+        let text = XETextField(frame: CGRect(x: 10, y: 330, width: UIScreen.main.bounds.width, height: 20))
+        return text
+    }()
+    
+    var loginUrl: XETextField = {
+        let text = XETextField(frame: CGRect(x: 10, y: 360, width: UIScreen.main.bounds.width, height: 20))
+        return text
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
         
         //测试按钮
         
-        goToWebView()
+        loadUrl.setTitle("banner:")
+        loadUrl.setText("https://appB9dZ3KDm5711.h5.test.xiaoeknow.com")
+        view.addSubview(loadUrl)
+        
+        interceptAddress.setTitle("拦截:")
+        interceptAddress.setText("v1/auth")
+        view.addSubview(interceptAddress)
+        
+        appId.setTitle("appId:")
+        appId.setText("appB9dZ3KDm5711")
+        view.addSubview(appId)
+        
+        userId.setTitle("userId:")
+        userId.setText("u_lp_1597390729_5f363f89ef2c9_p107g5")
+        view.addSubview(userId)
+        
+        client_id.setTitle("client_id:")
+        client_id.setText("xopGePTcT2m3515")
+        view.addSubview(client_id)
+        
+        client_secret.setTitle("client_secret:")
+        client_secret.setText("G2cwcwmaQ9Ru5qkgnigzX6pZl3e1B4QQ")
+        view.addSubview(client_secret)
 
-        let button = UIButton(frame: CGRect(x: 10, y: 100, width: 200, height: 50))
+        loginUrl.setTitle("loginUrl")
+        loginUrl.setText("http://platform.h5.test.xiaoe-tech.com/platform/demo_sdk")
+        view.addSubview(loginUrl)
+        
+        let button = UIButton(frame: CGRect(x: (UIScreen.main.bounds.width-200)/2, y: 420, width: 200, height: 50))
         button.setTitle("进入小鹅H5页面", for: UIControl.State.normal)
         button.setTitleColor(UIColor.white, for: UIControl.State.normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 20)
         button.backgroundColor = UIColor.blue
-        button.center = view.center
+//        button.center = view.center
         view.addSubview(button)
-        button.addTarget(self, action: #selector(goToWebView), for: UIControl.Event.touchUpInside)
+        button.addTarget(self, action: #selector(gotoWeb), for: UIControl.Event.touchUpInside)
         
     }
     
-    func gotoWeb(_ address: String, _ interceptAddress: String, appId: String, userId: String ) {
-             let webViewController = WebViewController()
-             //在小鹅通B端管理台复制出来的课程链接
-             //webViewController.loadUrl = "https://appxrwbvfhb8064.h5.xiaoeknow.com/v1/course/alive/l_5f72e59be4b0e95a89c1be7f?type=2"
-             webViewController.loadUrl = address
-             webViewController.interceptAddress = interceptAddress
-             webViewController.appId = appId
-             webViewController.userId = userId
-             self.navigationController?.pushViewController(webViewController, animated: true)
+    @objc func gotoWeb() {
+        let webViewController = WebViewController()
+        //在小鹅通B端管理台复制出来的课程链接
+        //webViewController.loadUrl = "https://appxrwbvfhb8064.h5.xiaoeknow.com/v1/course/alive/l_5f72e59be4b0e95a89c1be7f?type=2"
+        webViewController.loadUrl = self.loadUrl.getText()
+        webViewController.interceptAddress = self.interceptAddress.getText()
+        webViewController.appId = self.appId.getText()
+        webViewController.userId = self.userId.getText()
+        webViewController.loginUrl = self.loginUrl.getText()
+        webViewController.client_id = self.client_id.getText()
+        webViewController.client_secret = self.client_secret.getText()
+        webViewController.loginUrl = self.loginUrl.getText()
+
+        self.navigationController?.pushViewController(webViewController, animated: true)
     }
     
-    @objc func goToWebView() -> Void {
-     
-           let alertController = UIAlertController(title: "请确认登录信息",
-                                                   message: nil, preferredStyle: .alert)
-           alertController.addTextField { (textField) in
-               textField.placeholder = "请输入店铺地址"
-               textField.text = "http://apptlyqoaza9229.h5.inside.xiaoeknow.com/"
-           }
-           alertController.addTextField { (textField) in
-               textField.placeholder = "请输入拦截地址"
-               textField.text = "http://www.baidu.com/"
-           }
-           alertController.addTextField { (textField) in
-               textField.placeholder = "请输入app_id"
-               textField.text = "appTlYQOaza9229"
-           }
-           alertController.addTextField { (textField) in
-               textField.placeholder = "请输入user_id"
-               textField.text = "u_5f4cb41866714_3Wt6zwmJQW"
-           }
-           let cancleAction = UIAlertAction(title: "取消", style: .cancel,handler: { action in
-               
-           })
-           let okAction = UIAlertAction(title: "确认", style: .default, handler: {[weak self]
-               action in
-               if  let address = alertController.textFields?[0].text as? String, let interceptAddress =  alertController.textFields?[1].text as? String, let appid = alertController.textFields?[2].text as? String, let userId =  alertController.textFields?[3].text as? String {
-                   self?.gotoWeb(address, interceptAddress, appId: appid, userId: userId)
-               }
-           })
-           alertController.addAction(cancleAction)
-           alertController.addAction(okAction)
-           self.present(alertController, animated: true, completion: nil)
-       
-    }
-
 }
 
+class XETextField: UIView {
+    
+    var label: UILabel = {
+        let label = UILabel(frame: CGRect.init(x: 0, y: 0, width: 60, height: 27))
+        label.font = UIFont.systemFont(ofSize: 15)
+        return label
+    }()
+    
+    var input: UITextField = {
+        let input = UITextField(frame: CGRect.init(x: 65, y: 0, width: 280, height: 27))
+        input.backgroundColor = UIColor.gray
+        return input
+    }()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        addSubview(label)
+        addSubview(input)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setTitle(_ title: String){
+        label.text = title;
+    }
+    
+    func setText(_ text: String){
+        input.text = text
+    }
+    
+    func getText() -> String{
+        return input.text ?? ""
+    }
+    
+    
+}
