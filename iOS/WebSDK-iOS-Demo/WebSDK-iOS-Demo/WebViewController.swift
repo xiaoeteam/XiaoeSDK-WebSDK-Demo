@@ -19,20 +19,8 @@ class WebViewController : UIViewController {
         }
     }
     
-    lazy var webView : WKWebView = {
-        var rect = self.view.bounds
-        rect.origin.y = isIphoneX ? 88 : 64
-        rect.size.height = rect.size.height - rect.origin.y
-        let view = WKWebView.init(frame: rect )
-        view.uiDelegate = self;
-        view.navigationDelegate = self;
-        return view
-    }()
-    
     ///在小鹅通B端管理台复制出来的课程链接
     var loadUrl:String?
-    
-    var interceptAddress: String?
     
     var appId: String?
     
@@ -47,21 +35,56 @@ class WebViewController : UIViewController {
     /// 登录操作前的页面
     var loginFrontUrl: String?
     
+    lazy var webView : WKWebView = {
+        
+        /// - react
+        var react = self.view.bounds
+        react.origin.y = isIphoneX ? 88 : 64
+        react.size.height = react.size.height - react.origin.y
+        
+        /// - config
+        let webConfig = WKWebViewConfiguration()
+        webConfig.preferences = WKPreferences()
+        webConfig.processPool  = WKProcessPool()
+        webConfig.preferences.minimumFontSize = 10;
+        webConfig.preferences.javaScriptEnabled = true
+        webConfig.preferences.javaScriptCanOpenWindowsAutomatically = false
+        
+        /// - cookieValue
+        let cookieValue = "document.cookie = 'fromapp=ios';document.cookie = 'channel=appstore';document.cookie = 'xe_websdk=1';"
+        let userContentController = WKUserContentController()
+        let cookieScript = WKUserScript(source: cookieValue, injectionTime: WKUserScriptInjectionTime.atDocumentStart, forMainFrameOnly: false)
+        userContentController.addUserScript(cookieScript)
+        webConfig.userContentController = userContentController
+        
+        /// - webview
+        let webView = WKWebView(frame: react, configuration: webConfig)
+        webView.uiDelegate = self;
+        webView.navigationDelegate = self;
+        return webView
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = UIColor.white
         
-        //添加webView
+        let navitem = UIBarButtonItem(image: UIImage(named: "navi_back"),
+                                      style: .plain,
+                                      target: self,
+                                      action: #selector(back))
+        self.navigationItem.leftBarButtonItem = navitem
+        
+        /// 添加webView
         view.addSubview(webView)
         
-        //加载网页
-        if let urlstr = loadUrl, let url = URL(string: urlstr) {
-            webView.load(URLRequest(url: url))
+        /// load网页
+        if let urlstr = loadUrl  {
+            loadRequestWithUrlString(urlstr)
         }
         
     }
     
-    //自定义的加载视图（展示）
+    /// 自定义的加载视图（展示）
     func showLoading() -> Void {
         VHUD.dismiss(0.0,0.0)
         var content = VHUDContent(.loop(3.0))
@@ -89,13 +112,56 @@ class WebViewController : UIViewController {
         VHUD.dismiss(0.25, 0.25)
     }
     
+    deinit {
+        hideLoading()
+    }
 }
 
+
+// - 私有方法
 extension WebViewController {
     
-    //APP测登录态获取同步方法事例
+    /// replace的方法清空路由栈，防止返回重复登录页面
+    /// - Parameters:
+    ///   - url: 加载的链接
+    func openUrl(_ url: String) {
+        self.webView.evaluateJavaScript("window.location.replace('\(url)')", completionHandler: nil)
+    }
+    
+    /// 加载携带的Cookie
+    /// - Parameters:
+    ///   - urlString: 第一次的加载需要携带cookie的链接
+    func loadRequestWithUrlString(_ urlString: String) {
+        
+        /// cookie
+        let cookieValue = "xe_websdk=1;"
+        
+        let url:NSURL = NSURL(string:urlString)!
+        
+        let request : NSMutableURLRequest = NSMutableURLRequest(url: url as URL)
+        
+        request.addValue(cookieValue, forHTTPHeaderField: "Cookie")
+        
+        webView.load(request as URLRequest)
+        
+    }
+    
+    @objc func back() {
+        if webView.canGoBack {
+            webView.goBack()
+        } else {
+            self.navigationController?.popViewController(animated: true)
+        }
+    }
+    
+}
+
+// MARK: - 网络request
+extension WebViewController {
+    
+    /// APP测登录态获取同步方法事例
     func goToLogin() -> Void {
-       
+        
         let urlString = loginUrl ?? ""
         let params: Any = ["app_id":self.appId ?? "" ,"client_id":self.client_id ?? "","client_secret":self.client_secret ?? "","user_id": self.userId ?? "","grant_type":"client_credential","banner_url":loginFrontUrl]
         guard let body = try? JSONSerialization.data(withJSONObject: params, options: .prettyPrinted) else {
@@ -116,22 +182,20 @@ extension WebViewController {
                     if let code = reslut["code"] as? Int, code != 0{
                         if let urlstr = dic["permission_denied_url"] ,  let url = URL(string: urlstr) {
                             DispatchQueue.main.async {
-                            self?.webView.load(URLRequest(url: url))
+                                self?.openUrl(urlstr)
                             }
                         }
                     } else {
                         /// 授权成功
                         if  let urlstr = dic["login_url"] ,  let url = URL(string: urlstr) {
                             DispatchQueue.main.async {
-                                self?.webView.load(URLRequest(url: url))
+                                self?.openUrl(urlstr)
                             }
                         }
                     }
                 }
-                
-                
         })
- 
+        
     }
     
     
@@ -159,7 +223,7 @@ extension WebViewController {
             request.httpMethod = "GET"
         }
         
-        // 请求
+        ///  请求
         let config = URLSessionConfiguration.default
         let session = URLSession(configuration: config)
         let dataTask = session.dataTask(with: request, completionHandler: completionHandler)
@@ -167,7 +231,7 @@ extension WebViewController {
     }
 }
 
-//网页代理回调
+// MARK: - WKUIDelegate,WKNavigationDelegate
 extension WebViewController : WKUIDelegate,WKNavigationDelegate {
     
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
@@ -189,20 +253,36 @@ extension WebViewController : WKUIDelegate,WKNavigationDelegate {
         }
     }
     
- 
+    
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         
         /**
          APP需要拦截判断小鹅通课堂H5内发起的请求APP同步登录态信息的特定URL,
          调起APP测的登录态处理流程，处理方式参考goToLogin方法样例
          */
-        if let urlstr = navigationAction.request.url?.absoluteString , urlstr.contains(interceptAddress ?? "")  {
-            //发起登录请求
-            goToLogin()
+        
+        guard let urlstr = navigationAction.request.url?.absoluteString else {
             decisionHandler(WKNavigationActionPolicy.cancel)
             return
+        }
+        
+        /// 微信支付
+        if urlstr.hasPrefix("weixin://wap/pay") {
+            let url = URL.init(string: urlstr)!
+            let canOpen =  UIApplication.shared.canOpenURL(url)
+            if canOpen {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            }
+            decisionHandler(WKNavigationActionPolicy.cancel)
+            return
+        }
+        
+        if urlstr.contains("/outLoginHint")  {
+            /// 发起登录请求
+            goToLogin()
         } else {
-            loginFrontUrl = navigationAction.request.url?.absoluteString
+            /// 登录成功后的回转链接
+            loginFrontUrl = urlstr
         }
         decisionHandler(WKNavigationActionPolicy.allow)
     }

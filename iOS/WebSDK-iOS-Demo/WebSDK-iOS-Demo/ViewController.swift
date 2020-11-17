@@ -11,15 +11,10 @@ import UIKit
 class ViewController: UIViewController {
     
     var loadUrl: XETextField = {
-        let text = XETextField(frame: CGRect(x: 10, y: 180, width: UIScreen.main.bounds.width, height: 20))
-        return text
-    }()
-    
-    var interceptAddress: XETextField = {
         let text = XETextField(frame: CGRect(x: 10, y: 210, width: UIScreen.main.bounds.width, height: 20))
         return text
     }()
-    
+        
     var appId: XETextField = {
         let text = XETextField(frame: CGRect(x: 10, y: 240, width: UIScreen.main.bounds.width, height: 20))
         return text
@@ -30,7 +25,6 @@ class ViewController: UIViewController {
         return text
     }()
 
-    
     var client_id: XETextField = {
         let text = XETextField(frame: CGRect(x: 10, y: 300, width: UIScreen.main.bounds.width, height: 20))
         return text
@@ -53,31 +47,27 @@ class ViewController: UIViewController {
         //测试按钮
         
         loadUrl.setTitle("banner:")
-        loadUrl.setText("https://appB9dZ3KDm5711.h5.test.xiaoeknow.com")
+        loadUrl.setText("https://apppcHqlTPT3482.h5.inside.xiaoeknow.com")
         view.addSubview(loadUrl)
         
-        interceptAddress.setTitle("拦截:")
-        interceptAddress.setText("v1/auth")
-        view.addSubview(interceptAddress)
-        
         appId.setTitle("appId:")
-        appId.setText("appB9dZ3KDm5711")
+        appId.setText("apppcHqlTPT3482")
         view.addSubview(appId)
         
         userId.setTitle("userId:")
-        userId.setText("u_lp_1597390729_5f363f89ef2c9_p107g5")
+        userId.setText("u_qq_5f73f163c3b20_76fGHOcybRT")
         view.addSubview(userId)
         
         client_id.setTitle("client_id:")
-        client_id.setText("xopGePTcT2m3515")
+        client_id.setText("xop3glkgRnh3725")
         view.addSubview(client_id)
         
         client_secret.setTitle("client_secret:")
-        client_secret.setText("G2cwcwmaQ9Ru5qkgnigzX6pZl3e1B4QQ")
+        client_secret.setText("W6FtfqHeyKbipng7Reb5F5ohUa5ywcDN")
         view.addSubview(client_secret)
 
         loginUrl.setTitle("loginUrl")
-        loginUrl.setText("http://platform.h5.test.xiaoe-tech.com/platform/demo_sdk")
+        loginUrl.setText("https://platform.h5.inside.xiaoe-tech.com/platform/demo_sdk")
         view.addSubview(loginUrl)
         
         let button = UIButton(frame: CGRect(x: (UIScreen.main.bounds.width-200)/2, y: 420, width: 200, height: 50))
@@ -96,7 +86,6 @@ class ViewController: UIViewController {
         //在小鹅通B端管理台复制出来的课程链接
         //webViewController.loadUrl = "https://appxrwbvfhb8064.h5.xiaoeknow.com/v1/course/alive/l_5f72e59be4b0e95a89c1be7f?type=2"
         webViewController.loadUrl = self.loadUrl.getText()
-        webViewController.interceptAddress = self.interceptAddress.getText()
         webViewController.appId = self.appId.getText()
         webViewController.userId = self.userId.getText()
         webViewController.loginUrl = self.loginUrl.getText()

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		453F13C425629ACF00B05BC0 /* navi_back@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 453F13C325629ACF00B05BC0 /* navi_back@2x.png */; };
 		51C572F92522D9090045763F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C572F82522D9090045763F /* AppDelegate.swift */; };
 		51C572FD2522D9090045763F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51C572FC2522D9090045763F /* ViewController.swift */; };
 		51C573022522D90B0045763F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 51C573012522D90B0045763F /* Assets.xcassets */; };
@@ -22,6 +23,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		453F13C325629ACF00B05BC0 /* navi_back@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navi_back@2x.png"; sourceTree = "<group>"; };
 		51C572F52522D9090045763F /* WebSDK-iOS-Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WebSDK-iOS-Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		51C572F82522D9090045763F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		51C572FC2522D9090045763F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 		51C57310252320990045763F /* ProgressHUD */ = {
 			isa = PBXGroup;
 			children = (
+				453F13C325629ACF00B05BC0 /* navi_back@2x.png */,
 				51C57320252322820045763F /* DisplayLink.swift */,
 				51C57323252322820045763F /* ProgressView.swift */,
 				51C5731F252322820045763F /* UIView+AutoLayout.swift */,
@@ -151,6 +154,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				453F13C425629ACF00B05BC0 /* navi_back@2x.png in Resources */,
 				51C573052522D90B0045763F /* LaunchScreen.storyboard in Resources */,
 				51C573022522D90B0045763F /* Assets.xcassets in Resources */,
 			);
