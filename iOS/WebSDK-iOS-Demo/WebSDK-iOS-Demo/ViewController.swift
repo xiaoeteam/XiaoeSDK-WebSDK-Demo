@@ -47,27 +47,27 @@ class ViewController: UIViewController {
         //测试按钮
         
         loadUrl.setTitle("banner:")
-        loadUrl.setText("https://apppcHqlTPT3482.h5.inside.xiaoeknow.com")
+        loadUrl.setText("https://app38itOR341547.h5.xiaoeknow.com")
         view.addSubview(loadUrl)
         
         appId.setTitle("appId:")
-        appId.setText("apppcHqlTPT3482")
+        appId.setText("app38itOR341547")
         view.addSubview(appId)
         
         userId.setTitle("userId:")
-        userId.setText("u_qq_5f73f163c3b20_76fGHOcybRT")
+        userId.setText("u_qq_5f97d4154b42a_6xcQqIwqfZP")
         view.addSubview(userId)
         
         client_id.setTitle("client_id:")
-        client_id.setText("xop3glkgRnh3725")
+        client_id.setText("xopIvCAzN8R7416")
         view.addSubview(client_id)
         
         client_secret.setTitle("client_secret:")
-        client_secret.setText("W6FtfqHeyKbipng7Reb5F5ohUa5ywcDN")
+        client_secret.setText("dfomGwT7JRWWnzY3okZ6yTkHtgNPTyhr")
         view.addSubview(client_secret)
 
         loginUrl.setTitle("loginUrl")
-        loginUrl.setText("https://platform.h5.inside.xiaoe-tech.com/platform/demo_sdk")
+        loginUrl.setText("https://platform.h5.xiaoe-tech.com/platform/demo_sdk")
         view.addSubview(loginUrl)
         
         let button = UIButton(frame: CGRect(x: (UIScreen.main.bounds.width-200)/2, y: 420, width: 200, height: 50))

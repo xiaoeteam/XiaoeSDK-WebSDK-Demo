@@ -32,6 +32,8 @@ class WebViewController : UIViewController {
     
     var client_secret: String?
     
+    var isloadPayLink: Bool = false
+    
     /// 登录操作前的页面
     var loginFrontUrl: String?
     
@@ -51,7 +53,7 @@ class WebViewController : UIViewController {
         webConfig.preferences.javaScriptCanOpenWindowsAutomatically = false
         
         /// - cookieValue
-        let cookieValue = "document.cookie = 'fromapp=ios';document.cookie = 'channel=appstore';document.cookie = 'xe_websdk=1';"
+        let cookieValue = "document.cookie = 'xe_websdk=1';"
         let userContentController = WKUserContentController()
         let cookieScript = WKUserScript(source: cookieValue, injectionTime: WKUserScriptInjectionTime.atDocumentStart, forMainFrameOnly: false)
         userContentController.addUserScript(cookieScript)
@@ -124,8 +126,10 @@ extension WebViewController {
     /// replace的方法清空路由栈，防止返回重复登录页面
     /// - Parameters:
     ///   - url: 加载的链接
-    func openUrl(_ url: String) {
-        self.webView.evaluateJavaScript("window.location.replace('\(url)')", completionHandler: nil)
+    @objc  func openUrl(_ url: String) {
+        DispatchQueue.main.async {
+            self.webView.evaluateJavaScript("window.location.replace('\(url)')", completionHandler: nil)
+        }
     }
     
     /// 加载携带的Cookie
@@ -156,17 +160,32 @@ extension WebViewController {
     
 }
 
-// MARK: - 网络request
+// MARK: - 登陆，网络request
 extension WebViewController {
     
+    /// - 模拟登陆流程
+    func showlogin() {
+        let alter = UIAlertController.init(title: "确定登录", message: "", preferredStyle: .alert)
+        let cancle = UIAlertAction.init(title: "取消", style: .cancel) { (action) in
+        }
+        let sure = UIAlertAction.init(title: "确定", style: .default) {[weak self] (action) in
+            /// 发起登录请求
+            self?.goToLogin()
+        }
+        alter.addAction(cancle)
+        alter.addAction(sure)
+        self.present(alter, animated: true, completion: nil)
+    }
+    
     /// APP测登录态获取同步方法事例
-    func goToLogin() -> Void {
+    @objc func goToLogin(){
         
         let urlString = loginUrl ?? ""
         let params: Any = ["app_id":self.appId ?? "" ,"client_id":self.client_id ?? "","client_secret":self.client_secret ?? "","user_id": self.userId ?? "","grant_type":"client_credential","banner_url":loginFrontUrl]
         guard let body = try? JSONSerialization.data(withJSONObject: params, options: .prettyPrinted) else {
             return
         }
+        
         httpSend(urlString: urlString, body: String(data: body, encoding: .utf8)
             ,completionHandler: {[weak self] (data, response, error) in
                 if error != nil {
@@ -181,16 +200,12 @@ extension WebViewController {
                     /// 授权失败
                     if let code = reslut["code"] as? Int, code != 0{
                         if let urlstr = dic["permission_denied_url"] ,  let url = URL(string: urlstr) {
-                            DispatchQueue.main.async {
-                                self?.openUrl(urlstr)
-                            }
+                            self?.openUrl(urlstr)
                         }
                     } else {
                         /// 授权成功
                         if  let urlstr = dic["login_url"] ,  let url = URL(string: urlstr) {
-                            DispatchQueue.main.async {
-                                self?.openUrl(urlstr)
-                            }
+                            self?.openUrl(urlstr)
                         }
                     }
                 }
@@ -229,6 +244,7 @@ extension WebViewController {
         let dataTask = session.dataTask(with: request, completionHandler: completionHandler)
         dataTask.resume()
     }
+    
 }
 
 // MARK: - WKUIDelegate,WKNavigationDelegate
@@ -266,6 +282,25 @@ extension WebViewController : WKUIDelegate,WKNavigationDelegate {
             return
         }
         
+        /// - 设置支付的ref
+        /// 建议使用base64等加密，处理请求的链接，
+        if urlstr.contains("https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb")
+        {
+            if !self.isloadPayLink {
+                var mRequest = navigationAction.request
+                mRequest.setValue("h5-pay.sdk.xiaoe-tech.com://", forHTTPHeaderField: "Referer")
+                self.webView.load(mRequest)
+                self.isloadPayLink = true
+                decisionHandler(.cancel)
+                return
+            }else {
+                decisionHandler(.allow)
+                self.isloadPayLink = true
+                return
+            }
+        }
+        self.isloadPayLink = false
+        
         /// 微信支付
         if urlstr.hasPrefix("weixin://wap/pay") {
             let url = URL.init(string: urlstr)!
@@ -273,17 +308,20 @@ extension WebViewController : WKUIDelegate,WKNavigationDelegate {
             if canOpen {
                 UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
-            decisionHandler(WKNavigationActionPolicy.cancel)
+            decisionHandler(.cancel)
+            self.isloadPayLink = false
             return
         }
         
+        /// 拦截登录
         if urlstr.contains("/outLoginHint")  {
-            /// 发起登录请求
-            goToLogin()
+            self.showlogin()
         } else {
-            /// 登录成功后的回转链接
-            loginFrontUrl = urlstr
+            if !urlstr.contains("captcha") {
+                loginFrontUrl = urlstr
+            }
         }
+        
         decisionHandler(WKNavigationActionPolicy.allow)
     }
     
