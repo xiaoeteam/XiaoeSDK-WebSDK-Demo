@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/open_inside_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_margin="16dp"
+        android:text="Web_SDK开发环境"/>
+
+    <Button
+        android:id="@+id/open_test_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_margin="16dp"
+        android:text="Web_SDK测试环境"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="banner："/>
+
+        <EditText
+            android:id="@+id/web_sdk_banner_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:background="@null"
+            android:padding="8dp"
+            android:textColor="#333333"
+            android:singleLine="true"
+            android:layout_gravity="center_vertical"
+            android:text="https://app38itOR341547.h5.xiaoeknow.com"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="拦截：      "/>
+
+        <EditText
+            android:id="@+id/web_sdk_catch_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:background="@null"
+            android:padding="8dp"
+            android:textColor="#333333"
+            android:singleLine="true"
+            android:layout_gravity="center_vertical"
+            android:text="/outLoginHint"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="appId："/>
+
+        <EditText
+            android:id="@+id/web_sdk_appid_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:background="@null"
+            android:padding="8dp"
+            android:textColor="#333333"
+            android:singleLine="true"
+            android:layout_gravity="center_vertical"
+            android:text="app38itOR341547"/>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="userId："/>
+
+        <EditText
+            android:id="@+id/web_sdk_userid_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:background="@null"
+            android:padding="8dp"
+            android:textColor="#333333"
+            android:singleLine="true"
+            android:layout_gravity="center_vertical"
+            android:text="u_qq_5f97d4154b42a_6xcQqIwqfZP"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="client_id："/>
+
+        <EditText
+            android:id="@+id/web_sdk_clientid_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:background="@null"
+            android:padding="8dp"
+            android:textColor="#333333"
+            android:singleLine="true"
+            android:layout_gravity="center_vertical"
+            android:text="xopIvCAzN8R7416"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="client_secret："/>
+
+        <EditText
+            android:id="@+id/web_sdk_secret_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:background="@null"
+            android:padding="8dp"
+            android:textColor="#333333"
+            android:singleLine="true"
+            android:layout_gravity="center_vertical"
+            android:text="dfomGwT7JRWWnzY3okZ6yTkHtgNPTyhr"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="loginUrl："/>
+
+        <EditText
+            android:id="@+id/web_sdk_loginurl_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:background="@null"
+            android:padding="8dp"
+            android:textColor="#333333"
+            android:singleLine="true"
+            android:layout_gravity="center_vertical"
+            android:text="https://platform.h5.xiaoe-tech.com/platform/demo_sdk"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/web_sdk_into_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#105CFB"
+        android:layout_margin="16dp"
+        android:text="进入Web店铺"/>
+
+</LinearLayout>
