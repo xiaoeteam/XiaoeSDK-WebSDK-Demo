@@ -10,6 +10,11 @@ import Foundation
 import UIKit
 import WebKit
 
+
+let base64WebUrl = "aHR0cHM6Ly93eC50ZW5wYXkuY29tL2NnaS1iaW4vbW1wYXl3ZWItYmluL2NoZWNrbXdlYg=="
+
+let base64WX = "d2VpeGluOi8vd2FwL3BheQ=="
+
 class WebViewController : UIViewController {
     
     var isIphoneX: Bool {
@@ -158,6 +163,14 @@ extension WebViewController {
         }
     }
     
+
+    /// base64解密方法
+    func base64Decoding(encodedString:String)->String
+     {
+         let decodedData = NSData(base64Encoded: encodedString, options: NSData.Base64DecodingOptions.init(rawValue: 0))
+         let decodedString = NSString(data: decodedData! as Data, encoding: String.Encoding.utf8.rawValue)! as String
+         return decodedString
+     }
 }
 
 // MARK: - 登陆，网络request
@@ -283,9 +296,8 @@ extension WebViewController : WKUIDelegate,WKNavigationDelegate {
         }
         
         /// - 设置支付的ref
-        /// 建议使用base64等加密，处理请求的链接，
-        if urlstr.contains("https://wx.tenpay.com/cgi-bin/mmpayweb-bin/checkmweb")
-        {
+        /// 建议使用base64等加密，
+        if urlstr.contains(base64Decoding(encodedString: base64WebUrl)) {
             if !self.isloadPayLink {
                 var mRequest = navigationAction.request
                 mRequest.setValue("h5-pay.sdk.xiaoe-tech.com://", forHTTPHeaderField: "Referer")
@@ -302,7 +314,8 @@ extension WebViewController : WKUIDelegate,WKNavigationDelegate {
         self.isloadPayLink = false
         
         /// 微信支付
-        if urlstr.hasPrefix("weixin://wap/pay") {
+        /// 建议使用base64等加密，
+        if urlstr.hasPrefix(base64Decoding(encodedString: base64WX)) {
             let url = URL.init(string: urlstr)!
             let canOpen =  UIApplication.shared.canOpenURL(url)
             if canOpen {
