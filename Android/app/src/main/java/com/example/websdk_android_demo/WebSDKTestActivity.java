@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -69,12 +68,19 @@ public class WebSDKTestActivity extends AppCompatActivity {
             actionBar.setDisplayShowCustomEnabled(true);
         }
 
+        //小鹅SDK测试页面
         bannerUrl = getIntent().getStringExtra("banner");
+        //登录拦截字符串
         interceptUrl = getIntent().getStringExtra("intercept");
+        //店铺ID
         appId = getIntent().getStringExtra("appId");
+        //用户ID
         userId = getIntent().getStringExtra("userId");
+        //小鹅通B端开通SDK服务后取得的clientId
         clientId = getIntent().getStringExtra("clientId");
+        //小鹅通B端开通SDK服务后取得的secretKey
         clientSecret = getIntent().getStringExtra("clientSecret");
+        //获取登录链接的接口
         loginUrl = getIntent().getStringExtra("loginUrl");
 
         mWebView = findViewById(R.id.web_sdk_view);
@@ -96,8 +102,51 @@ public class WebSDKTestActivity extends AppCompatActivity {
         loadUrl();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.tools, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch (item.getItemId()){
+            case android.R.id.home:
+                this.finish();
+                return true;
+            case R.id.fresh:
+                mWebView.reload();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        //网页回退逻辑，根据自身业务修改
+        if (mWebView.canGoBack()){
+            mWebView.goBack();
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        //WebView销毁回收
+        mWebView.setWebChromeClient(null);
+        mWebView.setWebViewClient(null);
+        mWebView.setTag(null);
+        mWebView.clearHistory();
+        mWebView.destroy();
+        super.onDestroy();
+    }
+
     @SuppressLint({"NewApi", "SetJavaScriptEnabled"})
     private void loadUrl() {
+        //WebSettings的常规设置，根据自身业务增减
         mWebView.setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.getSettings().setLoadsImagesAutomatically(true);
@@ -118,11 +167,13 @@ public class WebSDKTestActivity extends AppCompatActivity {
                 } catch (UnsupportedEncodingException ex) {
                     ex.printStackTrace();
                 }
+                //WebView拦截处理（包括获取登录链接和支付相关）
                 return intercept(view, url);
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                //WebView拦截处理（包括获取登录链接和支付相关）
                 return intercept(view, url);
             }
         });
@@ -138,23 +189,31 @@ public class WebSDKTestActivity extends AppCompatActivity {
                 super.onProgressChanged(view, newProgress);
             }
         });
+        //加载网页链接同时需要在Cookie中增加"xe_websdk=1"(固定)
         mWebView.loadUrl(bannerUrl);
-        setCookie();
+        CookieSyncManager.createInstance(this);
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        cookieManager.setCookie(bannerUrl, "xe_websdk=1");
+        CookieSyncManager.getInstance().sync();
     }
 
     private boolean intercept(WebView view, String url) {
+        //如果拦截到请求登录的url，第三方调用接口获取登录后的链接（这里只是测试，具体接口和逻辑根据自身业务修改）
         if (url.contains(interceptUrl)) {
             if (mLoginDlg != null && !mLoginDlg.isShowing()) {
                 mLoginDlg.show();
             }
             return true;
         }
+        //如果拦截到H5支付的链接，在WebView请求头加入如下（key：referer；value=https://h5-pay.sdk.xiaoe-tech.com 固定）
         if (url.startsWith("https://wx.tenpay.com")) {
             Map<String, String> extraHeaders = new HashMap<>();
             extraHeaders.put("referer", "https://h5-pay.sdk.xiaoe-tech.com");
             view.loadUrl(url, extraHeaders);
             return true;
         }
+        //如果拦截到如下url，跳转到微信进行支付
         if (url.startsWith("weixin://")) {
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(url));
@@ -164,14 +223,7 @@ public class WebSDKTestActivity extends AppCompatActivity {
         return false;
     }
 
-    private void setCookie() {
-        CookieSyncManager.createInstance(this);
-        CookieManager cookieManager = CookieManager.getInstance();
-        cookieManager.setAcceptCookie(true);
-        cookieManager.setCookie(bannerUrl, "xe_websdk=1");
-        CookieSyncManager.getInstance().sync();
-    }
-
+    //调用接口获取登录后链接
     private void doLogin() {
         try {
             JSONObject param = new JSONObject();
@@ -200,11 +252,10 @@ public class WebSDKTestActivity extends AppCompatActivity {
                     try {
                         Gson gson = new Gson();
                         LoginUrlBean loginUrlBean = gson.fromJson(response.body().string(), LoginUrlBean.class);
+                        //登录成功后（网页已经有登录态，刷新一下网页或者加载返回有登录态的接口）
                         if (loginUrlBean.getCode() == 0 && loginUrlBean.getData() != null) {
-                            Log.d("getUrl000", "the login token url = " + loginUrlBean.getData().getLogin_url());
                             mWebView.loadUrl(loginUrlBean.getData().getLogin_url());
                         } else if (loginUrlBean.getCode() == 10102 && loginUrlBean.getData() != null) {
-                            Log.d("getUrl000", "the error code = " + loginUrlBean.getCode() + ", msg = " + loginUrlBean.getMsg());
                             mWebView.loadUrl(loginUrlBean.getData().getPermission_denied_url());
                         } else {
                             Toast.makeText(WebSDKTestActivity.this, "登录失败, code = " + loginUrlBean.getCode() + " ," +
@@ -224,45 +275,5 @@ public class WebSDKTestActivity extends AppCompatActivity {
             Toast.makeText(WebSDKTestActivity.this, "链接配置错误", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.tools, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        switch (item.getItemId()){
-            case android.R.id.home:
-                this.finish();
-                return true;
-            case R.id.fresh:
-                mWebView.reload();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (mWebView.canGoBack()){
-            mWebView.goBack();
-            return;
-        }
-        super.onBackPressed();
-    }
-
-    @Override
-    protected void onDestroy() {
-        mWebView.setWebChromeClient(null);
-        mWebView.setWebViewClient(null);
-        mWebView.setTag(null);
-        mWebView.clearHistory();
-        mWebView.destroy();
-        super.onDestroy();
     }
 }
